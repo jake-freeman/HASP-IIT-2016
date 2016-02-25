@@ -9,7 +9,7 @@
 #include "HASP_Code.h"
 #include "VCO.h"
 #include "HackHD.h"
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 /************************************/
 /************* DEFINES **************/

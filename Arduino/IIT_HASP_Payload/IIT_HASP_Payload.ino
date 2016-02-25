@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include "HASP_Code.h"
 #include "HackHD.h"
 #include "Tasks.h"
