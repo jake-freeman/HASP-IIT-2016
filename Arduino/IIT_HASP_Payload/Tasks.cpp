@@ -1,8 +1,11 @@
 #include "Tasks.h"
 #include <Adafruit_BMP085.h>
 #include <Adafruit_INA219.h>
-#include <TMP006.h> 
+#include <TMP006.h>
 #include <HUMIDITY_HIH6130.h>
+#include <MPU6050.h>
+#include <MS5803_I2C.h>
+#include <copernicus.h>
 
 /* Stores the last moment in which each sensor was sampled */
 unsigned long timeTasks[NUMBER_OF_TASKS];
@@ -163,13 +166,8 @@ void checkTasks(){
     Task_readPressureSensor();
     Task_readHumidity_Temp2Sensor();
     Task_readArduinoCurrentSensor();
-    Task_readVCOCurrentSensor(); 
-    Task_sendSensors();  
-    Task_record10Minutes(); 
+    Task_readVCOCurrentSensor();
+    Task_sendSensors();
+    Task_record10Minutes();
     Task_VCOAutotune();
 }
-
-
-
-
-
