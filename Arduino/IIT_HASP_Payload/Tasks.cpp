@@ -29,6 +29,8 @@ extern MS5803 pressure_sensor;
 /* Current sensor */
 //extern Adafruit_INA219 ina219;
 
+int geiger_count = 0; //set up int to counter number of events from geiger
+
 /**
  * Task to read the Temperature sensor 1
  */
@@ -112,6 +114,22 @@ void Task_readPressureSensor(){
         // COM_serial->println(altitude_delta);
     }
 }
+
+/**
+ * Task to read the Geiger counter
+ */
+ void Task_readGeigerCounter() {
+  if( currentTime - timeTasks[TASK_GEIGER] > TASKPERIOD_GEIGER ){
+    Serial.println("Read Geiger!");
+    Serial.flush();
+    int current_count = geiger_count;
+    geiger_count = 0;
+    timeTasks[TASK_GEIGER] = currentTime;
+    Serial.println(current_count);
+    Serial.println();
+    Serial.flush();
+  }
+ }
 
 
 /**
@@ -223,4 +241,6 @@ void checkTasks(){
     Task_sendSensors();
     //Task_record10Minutes();
     //Task_VCOAutotune();
+    Task_readGeigerCounter();
+
 }

@@ -14,7 +14,7 @@
 /************* DEFINES **************/
 /************************************/
 
-#define NUMBER_OF_TASKS               9
+#define NUMBER_OF_TASKS              10
 
 #define TASK_TEMP1                    0
 #define TASK_HUMIDITY_TEMP2           1
@@ -25,6 +25,7 @@
 #define TASK_SENDSENSORS              6
 #define TASK_RECORDTENMIN             7
 #define TASK_VCOAUTOTUNE              8
+#define TASK_GEIGER                   9
 
 #define TASKPERIOD_TEMP1              1000
 #define TASKPERIOD_HUMIDITY_TEMP2     1000
@@ -35,7 +36,10 @@
 #define TASKPERIOD_SENDSENSORS        1000
 #define TASKPERIOD_RECORDTENMIN     600000
 #define TASKPERIOD_VCOAUTOTUNE        1000
+#define TASKPERIOD_GEIGER             1000
 
+
+extern int geiger_count; //set up int to counter number of events from geiger
 
 
 /***************************************/

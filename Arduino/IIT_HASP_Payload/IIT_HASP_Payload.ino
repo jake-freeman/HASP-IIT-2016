@@ -57,7 +57,8 @@ MS5803 pressure_sensor(ADDRESS_HIGH);
 /**                                     **/
 /*****************************************/
 
-
+int pin = 22; // pin for interrupt
+volatile int state = LOW; //volatile because passing data from interrupt to main program
 
 
 /**
@@ -72,6 +73,7 @@ void setup() {
 
     /* Start serial communication */
     Serial.begin(SERIAL_BAUDRATE);
+    Serial3.begin(9600);
 
     /* Trace */
     Serial.println("Start Hasp Program!");
@@ -89,6 +91,9 @@ void setup() {
     Serial.flush();
     pressure_sensor.reset();
     pressure_sensor.begin();
+
+    /* Setup Geiger counter */
+    attachInterrupt(digitalPinToInterrupt(pin), geiger, RISING);
 
     /* Setup humidity sensor */
     // Wire.begin();
@@ -123,3 +128,9 @@ void loop() {
     /* Read commands from NASA serial port */
     COMM_readSerial();
 }
+
+void geiger(){
+  /*this function is called whenever a geiger event occurs. millis() will be INcorrect after many calls to geiger(). delay will not work inside interrupt. */
+  geiger_count++; //adds one to count when gieger even occurs
+}
+
