@@ -16,7 +16,7 @@ bool HackHD_recordTenMin = false;
  * Hack HD setup function.
  */
 void HackHD_setup(){
-  
+
     /* Setup Camera as Off */
     pinMode(cameraPin, INPUT);
     HackHD_on = 0;
@@ -25,9 +25,9 @@ void HackHD_setup(){
 
 
 
-/* 
- * Pushes the HackHD button for t milliseconds. 
- * 
+/*
+ * Pushes the HackHD button for t milliseconds.
+ *
  * @param t Amount of time in milliseconds that the button is held down.
  */
 void HackHD_pushButton( int t ) {
@@ -77,7 +77,7 @@ void HackHD_startStopRecordTenMin(){
 
         /* Start taking pictures in Automatic mode */
         HackHD_startStop();
-    
+
         /* Flag up */
         HackHD_recordTenMin = true;
 
@@ -85,10 +85,10 @@ void HackHD_startStopRecordTenMin(){
 
     /* Otherwise, if the HackHD is not in Standby mode, stop recording */
     else if( !HackHD_standBy ){
-      
+
         /* Stop taking pictures */
         HackHD_startStop();
-    
+
         /* Flag down */
         HackHD_recordTenMin = false;
     }
@@ -112,4 +112,3 @@ void HackHD_turnOff(){
  */
 int HackHD_getHackHDOn(){ return HackHD_on; }
 bool HackHD_getHackHDRecordTenMin(){ return HackHD_recordTenMin; }
-

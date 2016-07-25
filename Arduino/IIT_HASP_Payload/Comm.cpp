@@ -18,16 +18,18 @@ HardwareSerial *COM_serial;
 /**
  * Setup function.
  */
-void COMM_setup(){
-
+void COMM_setup() {
     /* Setup Communicaton with NASA */
     //Serial2.begin(SERIAL2_BAUDRATE);
     //COM_serial = &Serial2;
+
+    /* DEBUG: For use in testing only */
     Serial.begin(SERIAL_BAUDRATE);
     COM_serial = &Serial;
 
-    pinMode(PIN_TX_SERIAL2, OUTPUT);
-    digitalWrite(PIN_TX_SERIAL2, HIGH);
+    // [HACK]? Not sure this is needed anymore
+    //pinMode(PIN_TX_SERIAL2, OUTPUT);
+    //digitalWrite(PIN_TX_SERIAL2, HIGH);
 }
 
 
@@ -35,7 +37,7 @@ void COMM_setup(){
  * Send sensors information through NASA COMM link
  *
  * The format of the package sent is:
- * <Head><Temp1><Temp2><Humidity><Pressure><Light><Camera><A1><A2><fcom><Modcom><Time><Checksum><Footer>
+ * <Head><Pressure*100><AltitudeDelta*10><Temp*10><Geiger><Camera><Time><Checksum><Footer>
  * Initial flag: !
  * Checksum: XOR function
  * End with: carry return
@@ -43,17 +45,16 @@ void COMM_setup(){
  * @param sensorArray Array where the sensors info is stored.
  */
 void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
-
     int i;
     uint8_t checksum = 0;
 
     /* Send Initial flag: '!' */
-    COM_serial->print("!");
-    checksum = checksum ^ int8_t('!');
+    char flag = '!';
+    COM_serial->print(flag);
+    checksum = checksum ^ int8_t(flag);
 
     /* Write other sensors values */
-    for( i=0 ; i<NUMBER_OF_SENSORS-2 ; i++ ){
-
+    for (i=0; i<NUMBER_OF_SENSORS; i++) {
         COM_serial->write(lowByte(sensorArray[i]));
         checksum = checksum ^ lowByte(sensorArray[i]);
 
@@ -61,37 +62,10 @@ void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
         checksum = checksum ^ lowByte(sensorArray[i]>>8);
     }
 
-
     /* Send Camera status (ON/OFF) */
     uint8_t camStatus = HackHD_getHackHDOn();
     COM_serial->write(camStatus);
     checksum = checksum ^ uint8_t(camStatus);
-
-    /* Send VCO minimum Analog Output */
-    // int VCOminOut = VCO_getMinAnalogOutput();
-    // COM_serial->write(VCOminOut);
-    // checksum = checksum ^ uint8_t(VCOminOut);
-
-    /* Send Current Sensors values */
-    // for( i = NUMBER_OF_SENSORS-2 ; i<NUMBER_OF_SENSORS ; i++ ){
-    //
-    //     COM_serial->write(lowByte(sensorArray[i]));
-    //     checksum = checksum ^ lowByte(sensorArray[i]);
-    //
-    //     COM_serial->write(lowByte(sensorArray[i]>>8));
-    //     checksum = checksum ^ lowByte(sensorArray[i]>>8);
-    // }
-
-
-    /* Send VCO analog output */
-    // int VCOout = VCO_getAnalogOutput();
-    // COM_serial->write(VCOout);
-    // checksum = checksum ^ (VCOout);
-
-    /* Send VCO state (ON/OFF) */
-    // int VCOon = VCO_getOnOff();
-    // COM_serial->write(int8_t(VCOon));
-    // checksum = checksum ^ (int8_t(VCOon));
 
     /* Send time information */
     COM_serial->write(lowByte(time));
@@ -136,9 +110,8 @@ void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
  *   21 XX - Set VCO frequency lower boundary
  *
  */
-void COMM_readSerial(){
-
-    while (COM_serial->available()>0) {
+void COMM_readSerial() {
+    while (COM_serial->available() > 0) {
 
         /* Collect all 7 bytes in inString */
         for(int i=0;i<6;i++) { inString[i] = inString[i+1]; }
@@ -154,22 +127,21 @@ void COMM_readSerial(){
         /* Byte 6: 0xA                  */
 
         /* First we check that Bytes 0, 1, 4, 5 and 6 are correct */
-        if( inString[0] == 0x01 &&
+        if (inString[0] == 0x01 &&
             inString[1] == 0x02 &&
             inString[4] == 0x03 &&
             inString[5] == 0x0D &&
-            inString[6] == 0x0A ){
+            inString[6] == 0x0A) {
 
             /* Extract the command bytes */
             uint16_t command = (inString[2] << 8) + inString[3];
 
             /* Identify them */
-            switch( command ){
+            switch (command) {
 
                 /* 0x0000: Reset Arduino */
                 case 0x0000:
                     HackHD_turnOff();                   /* Turn off camera */
-                    digitalWrite(CURRENTSENSOR2_PIN, LOW);     /* Turn off VCO */
                     break;
 
                 /* 0xAAFF: Start recording */
@@ -192,40 +164,27 @@ void COMM_readSerial(){
 
                 /* 0x1111: Next VCO state */
                 case 0x1111:
-                    VCO_setAutotune(false);
-                    VCO_nextState();
                     break;
 
                 /* 0x1122: Switch VCO autotune */
                 case 0x1122:
-                    if( !VCO_getAutotune() )
-                        VCO_setAutotune(true);
-                    else VCO_setAutotune(false);
                     break;
 
                 /* 0x1100: Turn VCO off */
                 case 0xAAFF:
-                    VCO_switch();
                     break;
 
                 /* 0x1100: Turn VCO on */
                 case 0x11FF:
-                    VCO_switch();
                     break;
             }
 
             /* 0x20XX: Set VCO frequency high boundary */
-            if( inString[2] == 0x20 ){
-                uint8_t bound = uint8_t(inString[3]);
-                VCO_setBoundaries( bound, 0 );
-                VCO_setAnalogOutput(VCO_getAnalogOutput());
+            if (inString[2] == 0x20) {
             }
 
             /* 0x21XX: Set VCO frequency high boundary */
-            if( inString[2] == 0x21 ){
-                uint8_t bound = uint8_t(inString[3]);
-                VCO_setBoundaries( 0, bound );
-                VCO_setAnalogOutput(VCO_getAnalogOutput());
+            if (inString[2] == 0x21) {
             }
         }
     }
