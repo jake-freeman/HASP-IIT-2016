@@ -93,13 +93,13 @@ void Task_sendSensors() {
 void Task_record10Minutes() {
     /* If the recording is not active, exit the function */
     if (!HackHD_getHackHDRecordTenMin()) {
-        //timeTasks[TASK_RECORDTENMIN] = currentTime;
-        //return;
+        timeTasks[TASK_RECORDTENMIN] = currentTime;
+        return;
     }
 
     if (currentTime - timeTasks[TASK_RECORDTENMIN] > TASKPERIOD_RECORDTENMIN) {
-        //HackHD_startStopRecordTenMin();
-        //timeTasks[TASK_RECORDTENMIN] = currentTime;
+        HackHD_startStopRecordTenMin();
+        timeTasks[TASK_RECORDTENMIN] = currentTime;
     }
 }
 
@@ -116,5 +116,5 @@ void checkTasks() {
     Task_readPressureAltTempSensor();
     Task_readGeigerCounter();
     Task_sendSensors();
-    //Task_record10Minutes();
+    Task_record10Minutes();
 }
