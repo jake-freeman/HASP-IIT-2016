@@ -68,10 +68,25 @@ void Task_readPressureAltTempSensor() {
         debug("Read Geiger!");
         int current_count = geiger_count;
         geiger_count = 0;
-        timeTasks[TASK_GEIGER] = currentTime;
+        sensorValues[SENSARRAY_GEIGER] = current_count;
         debug(current_count);
-        debug("");
+
+        timeTasks[TASK_GEIGER] = currentTime;
     }
+ }
+
+ /**
+  * Task to read current sensor
+  */
+ void Task_readCurrentSensor() {
+     if (currentTime - timeTasks[TASK_CURRENT] > TASKPERIOD_CURRENT) {
+         debug("Read Current!");
+         int current = analogRead(CURRENTSENSOR_PIN);
+         sensorValues[SENSARRAY_CURRENT] = current;
+         debug(current);
+
+         timeTasks[TASK_CURRENT] = currentTime;
+     }
  }
 
 
@@ -83,6 +98,7 @@ void Task_sendSensors() {
         debug("Send sensors!");
         COMM_sendSensors(sensorValues, currentTime);
         timeTasks[TASK_SENDSENSORS] = currentTime;
+        debug("");
     }
 }
 
@@ -115,6 +131,7 @@ void checkTasks() {
     /* Execute all the tasks */
     Task_readPressureAltTempSensor();
     Task_readGeigerCounter();
+    Task_readCurrentSensor();
     Task_sendSensors();
     Task_record10Minutes();
 }

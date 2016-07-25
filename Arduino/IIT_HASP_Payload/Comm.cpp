@@ -37,7 +37,7 @@ void COMM_setup() {
  * Send sensors information through NASA COMM link
  *
  * The format of the package sent is:
- * <Head><Pressure*100><AltitudeDelta*10><Temp*10><Geiger><Camera><Time><Checksum><Footer>
+ * <Head><Pressure*100><AltitudeDelta*10><Temp*10><Geiger><Current><Camera><Time><Checksum><Footer>
  * Initial flag: !
  * Checksum: XOR function
  * End with: carry return
