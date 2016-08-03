@@ -40,7 +40,7 @@ void COMM_setup() {
  * Send sensors information through NASA COMM link
  *
  * The format of the package sent is:
- * <Head><Pressure*100><AltitudeDelta*10><Temp*10><Geiger><Current><Camera><Time><Checksum><Footer>
+ * <Head($)>, <Time>, <Pressure*100>, <AltitudeDelta*100>, <Temp*100>, <Geiger>, <Current>, <Footer(^)>
  * Initial flag: !
  * Checksum: XOR function
  * End with: carry return
@@ -48,48 +48,15 @@ void COMM_setup() {
  * @param sensorArray Array where the sensors info is stored.
  */
 void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
-    int i;
-    uint8_t checksum = 0;
-
-    /* Send Initial flag: '!' */
-    char flag = '!';
-    COM_serial->print(flag);
-    checksum = checksum ^ int8_t(flag);
-
-    /* Write other sensors values */
-    for (i=0; i<NUMBER_OF_SENSORS; i++) {
-        COM_serial->write(lowByte(sensorArray[i]));
-        checksum = checksum ^ lowByte(sensorArray[i]);
-
-        COM_serial->write(lowByte(sensorArray[i]>>8));
-        checksum = checksum ^ lowByte(sensorArray[i]>>8);
+    COM_serial->write("$, ");
+    for (int i=0; i<NUMBER_OF_SENSORS; i++) {
+        COM_serial->write(", ");
+        COM_serial->write(String(sensorArray[i], 10).c_str());
     }
+    COM_serial->write(String(time, 10).c_str());
 
-    /* Send Camera status (ON/OFF) */
-    uint8_t camStatus = HackHD_getHackHDOn();
-    COM_serial->write(camStatus);
-    checksum = checksum ^ uint8_t(camStatus);
-
-    /* Send time information */
-    COM_serial->write(lowByte(time));
-    checksum = checksum ^ lowByte(time);
-
-    COM_serial->write(lowByte(time>>8));
-    checksum = checksum ^ lowByte(time>>8);
-
-    COM_serial->write(lowByte(time>>16));
-    checksum = checksum ^ lowByte(time>>16);
-
-    COM_serial->write(lowByte(time>>24));
-    checksum = checksum ^ lowByte(time>>24);
-
-    /* Send checksum */
-    COM_serial->write(checksum);
-
-    /* Prints the return carriage */
+    COM_serial->write(", ^");
     COM_serial->println();
-
-    /* Reset the port */
     COM_serial->flush();
 }
 

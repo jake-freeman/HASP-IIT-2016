@@ -9,15 +9,15 @@
 
 /* Pressure / Temp / Altitude sensor */
 MS5803 pressure_sensor(ADDRESS_HIGH);
-double BASE_ALTITUDE = 146.91,  // meters (Palestine, TX)
-       pressure_baseline = 0.0; // set in setup()
+double BASE_ALTITUDE     = 146.91,  // meters (Palestine, TX)
+       pressure_baseline = 0.0;     // set in setup()
 
 /* Geiger Counter (SEN-11345) */
 volatile int state = LOW; //volatile because passing data from interrupt to main program
 
 
 /**
- *  Setup.
+ *  Setup
  *    - MS5803 (Pressure)
  *    - HackHD (Camera)
  *    - NASA Serial port

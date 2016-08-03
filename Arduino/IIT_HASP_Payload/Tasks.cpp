@@ -46,14 +46,14 @@ void Task_readPressureAltTempSensor() {
         // Read temperature from the sensor in deg C, store in K * 10
         debug("Temperature!");
         double temperature_c = pressure_sensor.getTemperature(CELSIUS, ADC_512);
-        sensorValues[SENSARRAY_TEMP] = (unsigned long)((temperature_c + 273) * 10.00);
+        sensorValues[SENSARRAY_TEMP] = (unsigned long)((temperature_c + 273) * 100.00);
         debug(temperature_c);
 
         // Taking our baseline pressure at the beginning we can find an approximate
         // change in altitude based on the differences in pressure.
         debug("Altitude Delta!")
         double altitude_delta = altitude(pressure_abs , pressure_baseline);
-        sensorValues[SENSARRAY_ALTITUDE] = (unsigned long)(altitude_delta * 10.00);
+        sensorValues[SENSARRAY_ALTITUDE] = (unsigned long)(altitude_delta * 100.00);
         debug(altitude_delta);
 
         timeTasks[TASK_PRESSURE] = currentTime;
@@ -81,7 +81,11 @@ void Task_readPressureAltTempSensor() {
  void Task_readCurrentSensor() {
      if (currentTime - timeTasks[TASK_CURRENT] > TASKPERIOD_CURRENT) {
          debug("Read Current!");
-         int current = analogRead(CURRENTSENSOR_PIN);
+         int current_raw = analogRead(CURRENTSENSOR_PIN);
+         double current_volts = (double)(current_raw) * (5.0 / 1024.0),
+                current_amps  = (current_volts - 2.5) * 0.185;
+
+         unsigned long current = current_amps * 100;
          sensorValues[SENSARRAY_CURRENT] = current;
          debug(current);
 
