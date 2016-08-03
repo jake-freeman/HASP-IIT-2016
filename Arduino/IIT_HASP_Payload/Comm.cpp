@@ -15,17 +15,20 @@ uint8_t inString[7]="      ";
 /* COM serial lane */
 HardwareSerial *COM_serial;
 
+/* Reset function */
+void (* resetFunc) (void) = 0;
+
 /**
  * Setup function.
  */
 void COMM_setup() {
     /* Setup Communicaton with NASA */
-    //Serial2.begin(SERIAL2_BAUDRATE);
-    //COM_serial = &Serial2;
+    Serial2.begin(SERIAL2_BAUDRATE);
+    COM_serial = &Serial2;
 
     /* DEBUG: For use in testing only */
-    Serial.begin(SERIAL_BAUDRATE);
-    COM_serial = &Serial;
+    //Serial.begin(SERIAL_BAUDRATE);
+    //COM_serial = &Serial;
 
     // [HACK]? Not sure this is needed anymore
     //pinMode(PIN_TX_SERIAL2, OUTPUT);
@@ -91,8 +94,6 @@ void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
 }
 
 
-
-
 /**
  * Read from serial port
  * SERIAL - Serial2
@@ -142,6 +143,7 @@ void COMM_readSerial() {
                 /* 0x0000: Reset Arduino */
                 case 0x0000:
                     HackHD_turnOff();                   /* Turn off camera */
+                    resetFunc();
                     break;
 
                 /* 0xAAFF: Start recording */
