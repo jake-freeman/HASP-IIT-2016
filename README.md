@@ -7,8 +7,6 @@ Code for Arduino / Matlab from 2016 IIT HASP team.
 ### 2016 (in progress)
 Author: Jacob Freeman
 
-Collaborators: Ian Gustafson, Sai Simon
-
 ### 2015
 Authors: Caterina Lazaro, Victor Arribas
 
@@ -21,12 +19,14 @@ Boards Used:
 - Arduino Due
 
 Sensors:
-- Current: SEN-08883
-- Temp: SEN-11859
-- GPS: GPS-11858
-- Humidity: HIH-6130
-- Acc/Gyro: SEN-11028
-- Pressure: MS-5803
+- Current: ACS-712
+- GPS: Copernicus 2
+- Acc/Gyro: MPU-6050
+- Pressure / Temp / Altitude: MS-5803
+- Geiger Counter: SEN-11345
+
+Camera:
+- HackHD
 
 
 Illinois Institute of Technology
