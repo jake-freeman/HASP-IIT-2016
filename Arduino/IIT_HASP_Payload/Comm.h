@@ -26,7 +26,7 @@
 /*******************************/
 
 void COMM_setup();
-void COMM_sendSensors(unsigned long* sensorArray, unsigned long time);
+void COMM_sendSensors(double *sensorArray, unsigned long time);
 void COMM_readSerial();
 
 #endif

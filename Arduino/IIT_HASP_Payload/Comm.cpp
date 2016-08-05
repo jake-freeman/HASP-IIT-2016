@@ -47,13 +47,13 @@ void COMM_setup() {
  *
  * @param sensorArray Array where the sensors info is stored.
  */
-void COMM_sendSensors(unsigned long* sensorArray, unsigned long time) {
+void COMM_sendSensors(double* sensorArray, unsigned long time) {
     COM_serial->write("$");
     for (int i=0; i<NUMBER_OF_SENSORS; i++) {
         COM_serial->write(", ");
-        COM_serial->write(String(sensorArray[i], 10).c_str());
+        COM_serial->write(String(sensorArray[i], 2).c_str());
     }
-    COM_serial->write(String(time, 10).c_str());
+    COM_serial->write(String(time).c_str());
 
     COM_serial->write(", ^");
     COM_serial->println();

@@ -13,13 +13,13 @@ unsigned long currentTime;
 unsigned long timeTasks[NUMBER_OF_TASKS];
 
 /* Stores the last sampled value of each sensor */
-unsigned long sensorValues[NUMBER_OF_SENSORS];
+double sensorValues[NUMBER_OF_SENSORS];
 
 /* Pressure sensor */
 extern MS5803 pressure_sensor;
 extern double base_altitude,
               pressure_baseline;
-#define altitude(P, P0) (44330.0 * (1 - pow(P / P0, 1 / 5.255)));
+#define altitude(P, P0) (44330.0 * (1.0 - pow(P / P0, 1.0 / 5.255)));
 
 /* Geiger Counter */
 int geiger_count = 0; // to count events from geiger counter
@@ -40,20 +40,20 @@ void Task_readPressureAltTempSensor() {
         // Read pressure from the sensor in mbar.
         debug("Read Pressure!");
         double pressure_abs = pressure_sensor.getPressure(ADC_4096);
-        sensorValues[SENSARRAY_PRESSURE] = (unsigned long)(pressure_abs * 100.00);
+        sensorValues[SENSARRAY_PRESSURE] = pressure_abs;
         debug(pressure_abs);
 
         // Read temperature from the sensor in deg C, store in K * 10
         debug("Temperature!");
         double temperature_c = pressure_sensor.getTemperature(CELSIUS, ADC_512);
-        sensorValues[SENSARRAY_TEMP] = (unsigned long)((temperature_c + 273) * 100.00);
+        sensorValues[SENSARRAY_TEMP] = (double)(temperature_c + 273.00);
         debug(temperature_c);
 
         // Taking our baseline pressure at the beginning we can find an approximate
         // change in altitude based on the differences in pressure.
         debug("Altitude Delta!")
         double altitude_delta = altitude(pressure_abs , pressure_baseline);
-        sensorValues[SENSARRAY_ALTITUDE] = (unsigned long)(altitude_delta * 100.00);
+        sensorValues[SENSARRAY_ALTITUDE] = altitude_delta;
         debug(altitude_delta);
 
         timeTasks[TASK_PRESSURE] = currentTime;
@@ -85,7 +85,7 @@ void Task_readPressureAltTempSensor() {
          double current_volts = (double)(current_raw) * (5.0 / 1024.0),
                 current_amps  = (current_volts - 2.5) * 0.185;
 
-         unsigned long current = current_amps * 100;
+         double current = current_amps;
          sensorValues[SENSARRAY_CURRENT] = current;
          debug(current);
 
